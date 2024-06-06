@@ -4,7 +4,7 @@
   "description": "Starter package.json template",
   "main": "main.js",
   "scripts": {
-    "test": "jest 2> test.txt --forceExit  --detectOpenHandles",
+    "test": "jest 2> output.txt --forceExit  --detectOpenHandles",
     "start": "node main.js &"
   },
   "repository": {
