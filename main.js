@@ -1,20 +1,30 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-// Get command line arguments
-const filename = process.argv[2];
-const wordToRemove = process.argv[3];
+if (process.argv.length < 4) {
+  console.log('Usage: node app.js <filename> <wordToRemove>');
+  process.exit(1);
+}
 
-// Read the file
-fs.readFile(path.join(__dirname, filename), "utf8", function (err, data) {
-  if (err) throw err;
+const [filename, wordToRemove] = process.argv.slice(2);
 
-  // Replace all occurrences of the word
-  const result = data.replace(new RegExp(wordToRemove, "g"), "");
+const filePath = path.join(__dirname, filename);
 
-  // Write the result back to the file
-  fs.writeFile(path.join(__dirname, filename), result, "utf8", function (err) {
-    if (err) throw err;
+fs.readFile(filePath, 'utf8', (err, data) => {
+  if (err) {
+    console.error(`Error reading the file: ${err}`);
+    return;
+  }
+
+  const regex = new RegExp(`\\b${wordToRemove}\\b`, 'g');
+  const modifiedData = data.replace(regex, '');
+
+  fs.writeFile(filePath, modifiedData, 'utf8', err => {
+    if (err) {
+      console.error(`Error writing to the file: ${err}`);
+      return;
+    }
+
     console.log(`Removed ${wordToRemove} from ${filename}`);
   });
 });
