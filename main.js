@@ -1,34 +1,30 @@
-const fs = require('fs');
-const readline = require('readline');
+const fs = require("fs");
+const path = require("path");
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+if (process.argv.length < 4) {
+  console.log("Usage: node app.js <filename> <wordToRemove>");
+  process.exit(1);
+}
 
-function removeWordFromFile(filename, word) {
-  fs.readFile(filename, 'utf8', (err, data) => {
+const [fname, remove] = process.argv.slice(2);
+
+const filePath = path.join(__dirname, fname);
+
+fs.readFile(filePath, "utf8", (err, data) => {
+  if (err) {
+    console.error(`Error reading the file: ${err}`);
+    return;
+  }
+
+  const regex = new RegExp(`\\b${remove}\\b`, "g");
+  const modifiedData = data.replace(regex, "");
+
+  fs.writeFile(filePath, modifiedData, "utf8", (err) => {
     if (err) {
-      console.error(`Error reading file: ${err}`);
+      console.error(`Error writing to the file: ${err}`);
       return;
     }
 
-    const modifiedContent = data.replace(new RegExp(word, 'gi'), '');
-
-    fs.writeFile(filename, modifiedContent, 'utf8', (err) => {
-      if (err) {
-        console.error(`Error writing to file: ${err}`);
-        return;
-      }
-
-      console.log(`All occurrences of "${word}" have been removed from ${filename}.`);
-    });
-  });
-}
-
-rl.question('Enter the filename: ', (filename) => {
-  rl.question('Enter the word to remove: ', (word) => {
-    removeWordFromFile(filename, word);
-    rl.close();
+    console.log(`Removed ${remove} from ${fname}`);
   });
 });
